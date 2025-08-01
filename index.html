@@ -1,0 +1,290 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data/AI Strategy Proposal for MIF - Application Support</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .mif-orange { color: #f37321; }
+        .bg-mif-orange { background-color: #f37321; }
+        .border-mif-orange { border-color: #f37321; }
+        
+        .mif-blue { color: #008a9b; }
+        .bg-mif-blue { background-color: #008a9b; }
+        .border-mif-blue { border-color: #008a9b; }
+        
+        .mif-green { background-color: #4b5e40; } /* Subtle African-inspired accent */
+        
+        .tab-active {
+            background-color: #008a9b;
+            color: white;
+            border-color: #008a9b;
+        }
+        .tab-inactive {
+            background-color: white;
+            color: #374151;
+            border-color: #e5e7eb;
+        }
+        .tab-inactive:hover {
+            border-color: #f37321;
+            background-color: #fef7f0; /* Light orange tint */
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content-active {
+            display: block;
+        }
+        .architecture-arrow {
+            position: relative;
+            text-align: center;
+            margin: 0.5rem 0;
+        }
+        .architecture-arrow::after {
+            content: '↓';
+            font-size: 1.5rem;
+            color: #94a3b8;
+        }
+        .principle-card {
+            transition: transform 0.2s, background-color 0.2s;
+            border: 1px solid #f37321;
+        }
+        .principle-card:hover {
+            transform: translateY(-2px);
+            background-color: #fef7f0; /* Softer hover effect */
+            color: #1f2937; /* gray-800 */
+        }
+        .principle-card:hover p {
+            color: #1f2937;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="max-w-6xl mx-auto p-4 sm:p-6 md:p-8">
+
+        <!-- 1. Header Section -->
+        <header class="text-center mb-12 md:mb-16">
+            <div class="flex justify-center items-center mb-6">
+                <img src="https://mo.ibrahim.foundation/themes/custom/mif2/images/mif-menu.png" alt="Mo Ibrahim Foundation Logo" class="h-20 md:h-24">
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold mif-blue mb-2">Proposed Data/AI Strategy for MIF</h1>
+            <p class="text-lg md:text-xl mif-orange font-medium">A Vision for Advancing African Governance Analytics</p>
+            <p class="text-base text-slate-600 mt-4 max-w-3xl mx-auto">Proposition of a robust, ethical, and scalable data architecture to empower the Mo Ibrahim Foundation’s mission of strengthening governance across Africa, with a focus on the Ibrahim Index of African Governance (IIAG).</p>
+        </header>
+
+        <!-- 2. Guiding Principles Section -->
+        <section id="principles" class="mb-12 md:mb-16 bg-mif-green/10 p-6 rounded-2xl">
+            <h2 class="text-2xl font-bold mif-blue mb-6 text-center">My Guiding Principles for MIF’s Data Strategy</h2>
+            <p class="text-center text-slate-600 mb-6 max-w-2xl mx-auto">These principles reflect my approach to leading MIF’s data initiatives, ensuring alignment with African governance priorities and the role’s strategic objectives.</p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-8 rounded-2xl shadow-sm principle-card">
+                    <h3 class="font-bold text-lg mb-2">🌍 African-Centric Design</h3>
+                    <p class="text-slate-600 text-base">I propose a data strategy that prioritizes African contexts, integrating multi-source, multi-lingual datasets and low-tech solutions to deliver inclusive, actionable insights for the IIAG.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm principle-card">
+                    <h3 class="font-bold text-lg mb-2">☁️ Scalable Cloud Architecture</h3>
+                    <p class="text-slate-600 text-base">I advocate for a modular, cloud-native platform leveraging tools like BigQuery and Vertex AI, ensuring flexibility, portability, and minimal vendor dependency.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm principle-card">
+                    <h3 class="font-bold text-lg mb-2">💰 Financial Efficiency (FinOps)</h3>
+                    <p class="text-slate-600 text-base">My approach embeds cost governance with real-time monitoring and automated budget controls, optimizing resources for sustainable data operations.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm principle-card">
+                    <h3 class="font-bold text-lg mb-2">🛡️ Data Integrity & Trust</h3>
+                    <p class="text-slate-600 text-base">I will implement rigorous data governance, automated quality checks, and transparent lineage to ensure trusted, high-quality analytics for MIF’s stakeholders.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm principle-card">
+                    <h3 class="font-bold text-lg mb-2">✊🏿🤝🏿 Ethical AI & Compliance</h3>
+                    <p class="text-slate-600 text-base">I commit to ethical AI with privacy-first pipelines, data sovereignty, and adherence to African regulations (e.g., AU Data Policy), fostering trust across communities.</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm principle-card">
+                    <h3 class="font-bold text-lg mb-2">🚀 Phased & Impactful Delivery</h3>
+                    <p class="text-slate-600 text-base">My strategy starts with high-impact use cases, scaling incrementally to build capacity and deliver sustainable value for MIF’s mission.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Architecture Section -->
+        <section id="architecture" class="mb-12 md:mb-16">
+            <h2 class="text-2xl font-bold mif-blue mb-6 text-center">Proposed High-Level Data Architecture</h2>
+            <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm">
+                <p class="text-center text-slate-600 mb-6">My vision for a modular, scalable data platform to support MIF’s governance analytics, designed to meet the technical and ethical demands of the Data Manager/Senior Data Scientist role.</p>
+                <div class="flex flex-col items-center">
+                    <div class="w-full max-w-xl bg-slate-100 p-4 rounded-lg text-center shadow-inner mb-2">
+                        <span class="font-semibold">🌍 African Data Sources (Official Stats, GIS, Crowdsourced, Media)</span>
+                    </div>
+                    <div class="architecture-arrow"></div>
+                    <div class="w-full max-w-xl bg-slate-100 p-4 rounded-lg text-center shadow-inner mb-2">
+                        <span class="font-semibold">📥 Ingestion Layer (Containerized Microservices for Portability)</span>
+                    </div>
+                    <div class="architecture-arrow"></div>
+                    <div class="w-full max-w-xl bg-slate-100 p-4 rounded-lg text-center shadow-inner mb-2">
+                        <span class="font-semibold">🗄️ Raw Data Lake (Tiered Cloud Storage: GCS/S3)</span>
+                    </div>
+                    <div class="architecture-arrow"></div>
+                    <div class="w-full max-w-xl bg-mif-blue text-white p-5 rounded-lg text-center shadow-lg mb-2">
+                        <span class="font-bold text-lg">🏛️ Data Warehouse (BigQuery/Snowflake with DBT for Modeling)</span>
+                    </div>
+                    <div class="architecture-arrow"></div>
+                    <div class="w-full max-w-xl bg-slate-100 p-4 rounded-lg text-center shadow-inner mb-2">
+                        <span class="font-semibold">🧠 Modeling & AI (Vertex AI, Hugging Face - Ethical Workbench)</span>
+                    </div>
+                    <div class="architecture-arrow"></div>
+                    <div class="w-full max-w-xl bg-slate-100 p-4 rounded-lg text-center shadow-inner">
+                        <span class="font-semibold">📊 Visualization & Access (Power BI, Tableau, APIs, Offline Reports)</span>
+                    </div>
+                </div>
+                <div class="text-center mt-6 text-sm text-slate-500">
+                    <p>Orchestrated by a unified <span class="font-semibold">Data Governance, Pipeline Management, and FinOps</span> framework under my leadership as Data Manager/Senior Data Scientist.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Use Cases Section -->
+        <section id="use-cases" class="mb-12 md:mb-16">
+            <h2 class="text-2xl font-bold mif-blue mb-6 text-center">Proposed High-Impact Data Initiatives</h2>
+            <p class="text-center text-slate-600 mb-6 max-w-2xl mx-auto">These use cases demonstrate my ability to lead innovative, technically robust projects that enhance MIF’s governance analytics, tailored to the Data Manager/Senior Data Scientist role.</p>
+            <div class="flex flex-col md:flex-row justify-center gap-2 mb-6" id="tabs">
+                <button data-tab="use-case-1" class="tab-button tab-active py-2 px-4 rounded-lg border-2 font-semibold transition-all duration-300">🛰️ Geocoded Conflict Data</button>
+                <button data-tab="use-case-2" class="tab-button tab-inactive py-2 px-4 rounded-lg border-2 font-semibold transition-all duration-300">🗣️ Public Discourse NLP</button>
+                <button data-tab="use-case-3" class="tab-button tab-inactive py-2 px-4 rounded-lg border-2 font-semibold transition-all duration-300">🏗️ Infrastructure Monitoring</button>
+            </div>
+
+            <div id="tab-contents">
+                <div id="use-case-1" class="tab-content tab-content-active bg-white p-8 rounded-2xl shadow-sm">
+                    <h3 class="text-xl font-bold mif-blue mb-3">Enhancing the IIAG with Geocoded Conflict Data</h3>
+                    <p class="font-semibold text-slate-700 mb-2">Strategic Objective:</p>
+                    <p class="text-slate-600 mb-4">To enhance the IIAG’s “Security & Rule of Law” category with near real-time, geolocated conflict data, enabling dynamic governance insights.</p>
+                    <p class="font-semibold text-slate-700 mb-2">Proposed Implementation:</p>
+                    <ol class="list-decimal list-inside space-y-2 text-slate-600">
+                        <li><span class="font-medium">Automated Data Ingestion:</span> Develop containerized Cloud Functions to pull daily event data from the ACLED API, ensuring robust validation and storage in a Data Lake.</li>
+                        <li><span class="font-medium">Data Transformation:</span> Leverage dbt to create version-controlled SQL models in BigQuery, embedding automated quality checks for reliable metrics.</li>
+                        <li><span class="font-medium">Visualization:</span> Enable researchers to use Power BI or Tableau for interactive maps and time-series analyses of conflict hotspots.</li>
+                    </ol>
+                </div>
+                <div id="use-case-2" class="tab-content bg-white p-8 rounded-2xl shadow-sm">
+                    <h3 class="text-xl font-bold mif-blue mb-3">Gauging Public Discourse with Multilingual NLP</h3>
+                    <p class="font-semibold text-slate-700 mb-2">Strategic Objective:</p>
+                    <p class="text-slate-600 mb-4">To capture real-time public sentiment on policy issues through multilingual NLP, strengthening the IIAG’s “Participation, Rights & Inclusion” category.</p>
+                    <p class="font-semibold text-slate-700 mb-2">Proposed Implementation:</p>
+                    <ol class="list-decimal list-inside space-y-2 text-slate-600">
+                        <li><span class="font-medium">Data Collection:</span> Deploy Python scripts on Cloud Run to scrape articles from key African news outlets based on targeted keywords.</li>
+                        <li><span class="font-medium">Ethical AI Analysis:</span> Combine Google’s Natural Language API with Hugging Face models for sentiment and entity recognition in languages like Swahili and Hausa.</li>
+                        <li><span class="font-medium">Insights Delivery:</span> Store results in BigQuery and create dashboards to track sentiment trends, with transparency on model limitations.</li>
+                    </ol>
+                </div>
+                <div id="use-case-3" class="tab-content bg-white p-8 rounded-2xl shadow-sm">
+                    <h3 class="text-xl font-bold mif-blue mb-3">Monitoring Infrastructure with Satellite Imagery</h3>
+                    <p class="font-semibold text-slate-700 mb-2">Strategic Objective:</p>
+                    <p class="text-slate-600 mb-4">To provide evidence-based monitoring of public infrastructure projects, enhancing accountability and governance transparency.</p>
+                    <p class="font-semibold text-slate-700 mb-2">Proposed Implementation:</p>
+                    <ol class="list-decimal list-inside space-y-2 text-slate-600">
+                        <li><span class="font-medium">Data Acquisition:</span> Source open satellite imagery from Sentinel-2, ensuring cost-effective and accessible data inputs.</li>
+                        <li><span class="font-medium">AI Prototyping:</span> Use Vertex AI AutoML Vision to train models for detecting infrastructure changes, enabling rapid deployment.</li>
+                        <li><span class="font-medium">Automation:</span> Develop Python scripts to automate imagery processing and store results in BigQuery for geospatial visualization.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Governance & Conclusion Section -->
+        <section id="conclusion" class="bg-white p-8 rounded-2xl shadow-sm">
+            <h2 class="text-2xl font-bold mif-blue mb-4 text-center">Sustainability and Leadership Vision</h2>
+            <p class="text-center text-slate-600 mb-6 max-w-2xl mx-auto">My proposed architecture ensures MIF’s data strategy is sustainable, ethical, and impactful, aligning with the Data Manager/Senior Data Scientist role’s responsibilities.</p>
+            <div class="grid md:grid-cols-2 gap-8 text-slate-600">
+                <div>
+                    <h3 class="font-semibold text-slate-800 mb-2">Architectural Commitments</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex"><span class="mif-blue mr-2">✓</span><span>Flexibility: Modular, containerized pipelines to avoid vendor lock-in.</span></li>
+                        <li class="flex"><span class="mif-blue mr-2">✓</span><span>Cost Efficiency: FinOps-driven dashboards and automated resource management.</span></li>
+                        <li class="flex"><span class="mif-blue mr-2">✓</span><span>Data Quality: Multi-source validation and bias mitigation strategies.</span></li>
+                        <li class="flex"><span class="mif-blue mr-2">✓</span><span>Inclusivity: Support for multi-lingual and low-bandwidth access to broaden impact.</span></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-800 mb-2">Leadership & Capacity Building</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex"><span class="mif-blue mr-2">✓</span><span>Phased Implementation: Deliver quick-win use cases to build momentum.</span></li>
+                        <li class="flex"><span class="mif-blue mr-2">✓</span><span>Cost Governance: Establish FinOps best practices from day one.</span></li>
+                        <li class="flex"><span class="mif-blue mr-2">✓</span><span>Team Development: Train staff on cloud tools, AI, and African language NLP.</span></li>
+                        <li class="flex"><span class="mif-blue mr-2">✓</span><span>Stakeholder Engagement: Collaborate with NGOs and academia for data validation.</span></li>
+                    </ul>
+                </div>
+            </div>
+     
+        </section>
+
+    </div>
+
+    <script>
+        const tabs = document.getElementById('tabs');
+        const tabContents = document.getElementById('tab-contents');
+
+        tabs.addEventListener('click', (event) => {
+            const targetButton = event.target.closest('.tab-button');
+            if (!targetButton) return;
+
+            tabs.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('tab-active');
+                button.classList.add('tab-inactive');
+            });
+            tabContents.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('tab-content-active');
+            });
+
+            targetButton.classList.add('tab-active');
+            targetButton.classList.remove('tab-inactive');
+            const tabId = targetButton.dataset.tab;
+            document.getElementById(tabId).classList.add('tab-content-active');
+        });
+    </script>
+</body>
+</html>
